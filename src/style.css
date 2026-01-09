@@ -1,0 +1,14 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  overflow: hidden; /* スクロール禁止 */
+  touch-action: none; /* スマホでのピンチイン・ズーム等を禁止 */
+  user-select: none; /* 文字選択を禁止（連打時の誤作動防止） */
+  -webkit-user-select: none; /* Safari用 */
+}
+
+#app {
+  width: 100vw;
+  height: 100vh;
+}
