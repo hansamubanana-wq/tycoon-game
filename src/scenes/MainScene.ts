@@ -56,7 +56,8 @@ export class MainScene extends Phaser.Scene {
       emitting: false,
     });
     
-    const graphics = this.make.graphics({ x: 0, y: 0, add: false });
+    // 【修正点1】オプションから add: false を削除
+    const graphics = this.make.graphics({ x: 0, y: 0 });
     graphics.fillStyle(0xffff00, 1);
     graphics.fillRect(0, 0, 10, 10);
     graphics.generateTexture('flare', 10, 10);
@@ -68,7 +69,7 @@ export class MainScene extends Phaser.Scene {
     this.createHeaderUI();
     this.createShopButton(width / 2, height - 80);
     
-    // ★ここが重要：ショップウィンドウを作る（レスポンシブ対応版）
+    // ショップウィンドウ
     this.createShopWindow();
 
     this.saveMessage = this.add.text(width - 20, height - 20, 'Auto Saved', {
@@ -134,18 +135,17 @@ export class MainScene extends Phaser.Scene {
       fontSize: '24px', color: '#000000', fontFamily: 'Arial', fontStyle: 'bold'
     }).setOrigin(0.5);
 
-    const container = this.add.container(x, y, [btn, text]);
+    // 【修正点2】未使用の変数 container を宣言せず、生成のみ行う
+    this.add.container(x, y, [btn, text]);
     btn.setInteractive({ useHandCursor: true }).on('pointerdown', () => this.toggleShop());
   }
 
-  // ★ここを大幅改修：画面サイズに応じたウィンドウ作成
   private createShopWindow() {
     const { width, height } = this.scale;
     this.shopContainer = this.add.container(width / 2, height / 2);
     
     const overlay = this.add.rectangle(0, 0, width, height, 0x000000, 0.5).setInteractive();
     
-    // ★変更点：ウィンドウ幅を「画面幅の90%」か「最大500px」の小さい方に合わせる
     const windowWidth = Math.min(500, width * 0.9);
     const windowHeight = 450;
 
@@ -160,18 +160,15 @@ export class MainScene extends Phaser.Scene {
 
     this.shopContainer.add([overlay, bg, title, closeBtn]);
 
-    // アイテムリスト
     let yPos = -120;
     this.items.forEach((item, index) => {
       if (index >= 5) return;
 
-      // ★変更点：リストアイテムの幅もウィンドウに合わせて調整
-      const itemWidth = windowWidth - 40; // 左右20pxの余白
+      const itemWidth = windowWidth - 40;
       const itemBg = this.add.rectangle(0, yPos, itemWidth, 80, 0xffffff).setStrokeStyle(2, 0xaaaaaa);
       
-      // 文字やボタンの位置を相対的に計算
-      const textX = -itemWidth / 2 + 20; // 左端
-      const btnX = itemWidth / 2 - 70;   // 右端
+      const textX = -itemWidth / 2 + 20;
+      const btnX = itemWidth / 2 - 70;
 
       const infoText = this.add.text(textX, yPos - 20, `${item.name} (Lv.${item.count})`, {
         fontSize: '20px', color: '#333333', fontFamily: 'Arial', fontStyle: 'bold'
@@ -251,7 +248,7 @@ export class MainScene extends Phaser.Scene {
     this.items.forEach(item => {
       if (item.uiNameText && item.uiPriceText && item.uiButton) {
         item.uiNameText.setText(`${item.name} (Lv.${item.count})`);
-        item.uiPriceText.setText(`${item.price.toLocaleString()}`); // 円記号を省略してスペース確保
+        item.uiPriceText.setText(`${item.price.toLocaleString()}`);
         if (this.money >= item.price) {
           item.uiButton.setFillStyle(0x4caf50);
         } else {
